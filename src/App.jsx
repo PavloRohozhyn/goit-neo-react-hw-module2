@@ -31,7 +31,6 @@ function App() {
       return resetAllData();
     }
     // counters
-
     setData({
       ...data,
       [updateType]: data[updateType] + 1,
