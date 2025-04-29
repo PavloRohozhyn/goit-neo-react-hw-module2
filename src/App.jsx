@@ -6,23 +6,36 @@ import Feedback from "./components/Feedback/Feedback";
 import Notifcation from "./components/Notification/Notification";
 
 function App() {
-  /** set state, check localStorage, set default value */
+  const SDCK = "data-counts";
+  const STK = "data-total";
+
+  /** set COUNTS default value, check localStorage, set default value */
   const [data, setData] = useState(() => {
-    const localData = localStorage.getItem("data");
-    if (localData !== null) return JSON.parse(localData);
+    const localDataCounts = localStorage.getItem(SDCK);
+    if (localDataCounts !== null) return JSON.parse(localDataCounts);
     return {
       good: 0,
       neutral: 0,
       bad: 0,
-      total: 0,
     };
+  });
+
+  /** set TOTAL default value, check localStorage, set default value */
+  const [total, setTotal] = useState(() => {
+    const localDataTotal = localStorage.getItem(STK);
+    if (localDataTotal !== null) return JSON.parse(localDataTotal);
+    return 0;
   });
 
   /** set data into localStorage */
   useEffect(() => {
-    localStorage.setItem("data", JSON.stringify(data));
-    console.log(data);
+    localStorage.setItem(SDCK, JSON.stringify(data));
+    setTotal(data["good"] + data["neutral"] + data["bad"]);
   }, [data]);
+
+  useEffect(() => {
+    localStorage.setItem(STK, JSON.stringify(total));
+  }, [total]);
 
   // update
   const updateFeedback = (updateType) => {
@@ -30,32 +43,35 @@ function App() {
     if (updateType === "reset") {
       return resetAllData();
     }
+
     // counters
     setData({
       ...data,
       [updateType]: data[updateType] + 1,
-      ["total"]: data["good"] + data["neutral"] + data["bad"],
     });
   };
 
   // reset data
   const resetAllData = () => {
-    if (localStorage.getItem("data") !== null) {
-      localStorage.removeItem("data");
+    if (localStorage.getItem(SDCK) !== null) {
+      localStorage.removeItem(SDCK);
+    }
+    if (localStorage.getItem(STK) !== null) {
+      localStorage.removeItem(STK);
     }
     setData({
       good: 0,
       neutral: 0,
       bad: 0,
-      total: 0,
     });
+    setTotal(0);
   };
 
   return (
     <>
       <Description />
-      <Options fn={updateFeedback} data={data} />
-      {data.total ? <Feedback data={data} /> : <Notifcation />}
+      <Options fn={updateFeedback} total={total} />
+      {total ? <Feedback data={data} total={total} /> : <Notifcation />}
     </>
   );
 }

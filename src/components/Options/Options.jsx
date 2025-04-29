@@ -1,7 +1,6 @@
 import React from "react";
 
-const Options = ({ fn, data }) => {
-  const { total } = data;
+const Options = ({ fn, total }) => {
   return (
     <section>
       <button onClick={() => fn("good")}>Good</button>&nbsp;

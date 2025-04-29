@@ -1,7 +1,7 @@
 import React from "react";
 
-const Feedback = ({ data }) => {
-  const { good, neutral, bad, total } = data;
+const Feedback = ({ data, total }) => {
+  const { good, neutral, bad } = data;
 
   return (
     <section>
