@@ -1,6 +1,6 @@
 import React from "react";
 
-const Feedback = ({ data, total }) => {
+const Feedback = ({ data, pf }) => {
   const { good, neutral, bad } = data;
 
   return (
@@ -8,7 +8,7 @@ const Feedback = ({ data, total }) => {
       <p>Goog: {good}</p>
       <p>Neutral: {neutral}</p>
       <p>Bad: {bad}</p>
-      <p>Positive: {Math.round((good / total) * 100)}%</p>
+      <p>Positive: {pf ? pf : 0} %</p>
     </section>
   );
 };

@@ -7,8 +7,6 @@ import Notifcation from "./components/Notification/Notification";
 
 function App() {
   const SDCK = "data-counts";
-  const STK = "data-total";
-
   /** set COUNTS default value, check localStorage, set default value */
   const [data, setData] = useState(() => {
     const localDataCounts = localStorage.getItem(SDCK);
@@ -20,58 +18,51 @@ function App() {
     };
   });
 
-  /** set TOTAL default value, check localStorage, set default value */
-  const [total, setTotal] = useState(() => {
-    const localDataTotal = localStorage.getItem(STK);
-    if (localDataTotal !== null) return JSON.parse(localDataTotal);
-    return 0;
-  });
-
   /** set data into localStorage */
   useEffect(() => {
     localStorage.setItem(SDCK, JSON.stringify(data));
-    setTotal(data["good"] + data["neutral"] + data["bad"]);
   }, [data]);
 
-  useEffect(() => {
-    localStorage.setItem(STK, JSON.stringify(total));
-  }, [total]);
+  /** calculate total feedback */
+  const totalFeedback = data.good + data.neutral + data.bad;
 
-  // update
+  /** calculate positive feedback */
+  const positiveFeedback = totalFeedback
+    ? Math.round((data.good / totalFeedback) * 100)
+    : 0;
+
+  /** update */
   const updateFeedback = (updateType) => {
-    // reset handle
     if (updateType === "reset") {
       return resetAllData();
-    }
-
-    // counters
+    } // reset handle
     setData({
       ...data,
       [updateType]: data[updateType] + 1,
-    });
+    }); // counters
   };
 
-  // reset data
+  /** reset data */
   const resetAllData = () => {
     if (localStorage.getItem(SDCK) !== null) {
       localStorage.removeItem(SDCK);
-    }
-    if (localStorage.getItem(STK) !== null) {
-      localStorage.removeItem(STK);
     }
     setData({
       good: 0,
       neutral: 0,
       bad: 0,
     });
-    setTotal(0);
   };
 
   return (
     <>
       <Description />
-      <Options fn={updateFeedback} total={total} />
-      {total ? <Feedback data={data} total={total} /> : <Notifcation />}
+      <Options fn={updateFeedback} t={totalFeedback} />
+      {totalFeedback ? (
+        <Feedback data={data} pf={positiveFeedback} />
+      ) : (
+        <Notifcation />
+      )}
     </>
   );
 }
